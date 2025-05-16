@@ -1,0 +1,5 @@
+1. build mst : prim's algorithm
+2. find odd vetex
+3. make perfect matching : v log v안에 할수있지 않을까 결국 노드 간선을 통해 min heap을 만들면 되니까? 
+4. make euler circuit
+5. pass

@@ -1,0 +1,1 @@
+int distance(const struct Vertex p1, const struct Vertex p2);
