@@ -2,6 +2,7 @@
 #include <vector>
 
 void christofied::perfect_matching(){
+    std::cout << "PERFECT MATCHING START\n";
     std::vector<int>odd_vertex;
     for(int i=0; i<vertexes.size(); i++){
         if(this->vertexes[i].connected.size()%2 == 1){
@@ -32,4 +33,5 @@ void christofied::perfect_matching(){
             this->vertexes[odd_vertex[bestJ]].connected.push_back(odd_vertex[u]);
         }
     }
+    std::cout << "PERFECT MATCHING FINISH\n";
 }

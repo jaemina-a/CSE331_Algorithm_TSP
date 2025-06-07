@@ -3,6 +3,7 @@
 #include "utils.h"
 
 void christofied::MST() {
+    std::cout << "MAKE MST START\n";
     std::vector<std::pair<int, int>> min_dist(n); // {parent, cost}
     std::vector<bool> visited(n, false);
 
@@ -45,4 +46,5 @@ void christofied::MST() {
             }
         }
     }
+    std::cout << "MAKE MST FINISH\n";
 }

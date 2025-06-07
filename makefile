@@ -13,6 +13,7 @@ SRCS = main.cpp \
        perfectmatching.cpp \
        hamilton.cpp\
 	   utils.cpp\
+	   myalgo.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 

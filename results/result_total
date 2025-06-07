@@ -1,0 +1,32 @@
+==========
+[a280]
+Total cost : 3727
+MST cost : 2434
+OPTIMAL COST : 2579
+ACTUAL RUNNING TIME : 2312
+==========
+
+==========
+[xql662]
+Total cost : 3441
+MST cost : 2240
+OPTIMAL COST : 2513
+ACTUAL RUNNING TIME : 11365
+==========
+
+==========
+[kz9976]
+Total cost : 1642691
+MST cost : 939435
+OPTIMAL COST : 1061882
+ACTUAL RUNNING TIME : 1621823
+==========
+
+==========
+[mona-lisa100K]
+Total cost : 8805223
+MST cost : 5568355
+ACTUAL RUNNING TIME : 198980564
+==========
+
+
