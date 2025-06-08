@@ -36,9 +36,28 @@ void myalgorithm::cycle_make() {
         }
     }
     std::cout << "connected conunt : "<< c_c << std::endl;
+    
+    
     for(int step=0; step<2; step++){
+        int left=0;
+        int type_one =0;
+        int type_zero = 0;
+        int type_two =0;
+        for(int i=0 ;i<n; i++){
+            if(vertexes[i].connected.size() == 1) {
+                type_one ++;
+            }
+            else if(vertexes[i].connected.size() == 0){
+                type_zero ++ ;
+            }
+            else{
+                type_two ++;
+        }
+        }
+        std::cout <<"type_two:"<<type_two<< ", type_one:"<<type_one <<", type_zero:"<<type_zero<<std::endl;
         for(int i=0;i<n; i++){
             if(degree[i] < 2){
+                left++;
                 int minW = 100000;
                 int close = -1;
                 /*디그리 1인애 기준으로 모든 노드 순회하면서 디그리 2미만인 애들중 가장 작은놈을 찾기*/
@@ -64,6 +83,12 @@ void myalgorithm::cycle_make() {
                 degree[close]++;
                 c_c ++;
             }
+        }
+        std::cout <<"left cnt : "<<left<<std::endl;
+    }
+    for(int i=0;i <n;i++){
+        if(vertexes[i].connected.size()!=2){
+            std::cout << i <<"has not degree of 2" <<std::endl;
         }
     }
 }
@@ -161,6 +186,8 @@ void myalgorithm::cycle_connect() {
             vertexes[e.v].connected.push_back(e.u);
             degree[e.u]++;
             degree[e.v]++;
+            cycle_connect_nodes.push_back(e.v);
+            cycle_connect_nodes.push_back(e.u);
         }
     }
     //사이클이 아닌 것이 남아있는지를 확인해야함 -> 홀수개의 사이클이 병합되어 하나의 사이클이 될수도있는것
@@ -211,6 +238,7 @@ void myalgorithm::func(){
     auto start = std::chrono::high_resolution_clock::now();
     cycle_make();
     while(count_cycle()>1){
+        cycle_couunt_vec.push_back(count_cycle());
         cycle_cut();
         cycle_connect();
     }
@@ -233,7 +261,16 @@ void myalgorithm::func(){
                 break;
             }
         }
-        outFile << next <<'\n';
+        outFile << next;
+                
+        for(int x=0; x<cycle_connect_nodes.size(); x++){
+            if(cycle_connect_nodes[x] == next){
+                // outFile <<" c";
+                
+                break;
+            }
+        }
+        outFile << "\n";
         total_weight += distance(vertexes[current], vertexes[next]);
         prev = current;
         current = next;
@@ -249,6 +286,10 @@ void myalgorithm::func(){
         outFile << "OPTIMAL COST : " <<this->optimal_sum << "\n";
     }
     outFile << "ACTUAL RUNNING TIME : " << this->running_time.count() << "\n";
+    outFile <<"CYCLE COUNT\n";
+    for(int i=0; i<cycle_couunt_vec.size(); i++){
+        outFile<<cycle_couunt_vec[i] << "\n";
+    }
     outFile << "========================\n";
     outFile.close();
 }

@@ -6,8 +6,14 @@
 #include <stack>
 
 std::unordered_map<int, std::list<int>> graph;
-std::vector<int> euler_circuit;
 
+/*
+    graph = {index, 연결되어있는 노드의 인덱스 리스트}
+    stack = {지금까지 방문한 경로를 push}
+
+    시작점을 스택에 푸쉬하고, graph를 통해 다음 노드를 확인하며 방문후, 연결을 끊어가며 반복
+    결국 모든 간선이 제거되고, 스택에는 지금까지 방문한 노드가 순서대로 푸쉬되어있다.
+*/
 void christofied::hierholzer() {
     std::cout <<"HIERHOLZER START\n";
     int start  = 0;

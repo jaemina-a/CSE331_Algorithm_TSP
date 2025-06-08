@@ -34,6 +34,8 @@ private:
     std::chrono::microseconds running_time;
     std::vector<std::pair<int, int>> open_node_pairs;  // {u, v} 형태로 저장
     std::vector<int> answer;
+    std::vector<int> cycle_couunt_vec;
+    std::vector<int> cycle_connect_nodes;
 public:
     myalgorithm(std::string file_name,bool answer){
         this->file_name = file_name;
@@ -55,6 +57,8 @@ public:
 };
 class christofied{
 private:
+    std::vector<int> euler_circuit;
+
     std::string file_name;
     int n;
     int mst_sum;
@@ -62,9 +66,9 @@ private:
     int optimal_sum;
     bool answer_exist;
     std::chrono::microseconds running_time;
-public:
     std::vector<int> answer;
     std::vector<Vertex> vertexes; //all
+public:
     christofied(std::string file_name, bool answer_exist){
         this->file_name = file_name;
         this->mst_sum = 0;
@@ -115,7 +119,71 @@ public:
         
     }
 };
+#include <sys/resource.h>
 
+static long get_rss_kb() {
+    struct rusage ru;
+    getrusage(RUSAGE_SELF, &ru);
+    return ru.ru_maxrss;          // Linux: kB, macOS: bytes
+}
 
+class heldkarp{
+
+private:
+    std::string file_name;
+    int n;
+    int mst_sum;
+    int tsp_sum;
+    int optimal_sum;
+    bool answer_exist;
+    std::chrono::microseconds running_time;
+    std::vector<int> answer;
+    std::vector<Vertex> vertexes; //all
+public:
+    heldkarp(std::string file_name, bool answer_exist){
+        this->file_name = file_name;
+        this->answer_exist = answer_exist;
+        read_tsp_file();
+        if(answer_exist){
+            read_answer_file();
+        }
+    }
+    void read_answer_file();
+    void held_karp();
+    void read_tsp_file();
+    void run_heldkapr(){
+        
+        auto start = std::chrono::high_resolution_clock::now();
+        long mem_before = get_rss_kb();
+        held_karp();      // 함수 호출
+        long mem_after  = get_rss_kb();
+        std::cout << "ΔRSS ≃ " << (mem_after - mem_before) << " kB\n";
+        auto end = std::chrono::high_resolution_clock::now();
+        this->running_time = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
+        // std::cout << this->running_time.count() << std::endl;
+    }
+    void print_result(){
+        std::cout << "total cost : "<<this->tsp_sum << "\n";
+        if(this->answer_exist){
+            std::cout <<"optimal cost : " << this->optimal_sum << "\n";
+        }
+        std::string result_file_name = this->file_name + "_Christo"; 
+        std::string result_directory = "results/" + result_file_name;
+        std::cout << result_directory << std::endl;
+        std::ofstream outFile(result_directory);
+        outFile << "========================\n";
+        outFile << "Total cost : " << this->tsp_sum << "\nMST cost : " << this->mst_sum << "\n";
+        if(this->answer_exist){
+            outFile << "OPTIMAL COST : " <<this->optimal_sum << "\n";
+        }
+        outFile << "ACTUAL RUNNING TIME : " << this->running_time.count() << "\n";
+        for(int i =0; i<n; i++){
+            outFile << answer[i] << "\n";
+        }
+        outFile << "========================\n";
+        outFile.close();
+        
+    }
+};
 
 #endif

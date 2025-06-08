@@ -1,42 +1,65 @@
-
-#include <vector>
-#include <unordered_map>
-#include <climits>
-
+#include "christo.h"
 #include "utils.h"
+#include <cmath>
 
-int n;  // 도시 개수
-std::vector<std::vector<int>> cost; // 거리 행렬
-std::vector<std::unordered_map<int, int>> dp; // dp[last][mask]
+void heldkarp::held_karp() {
+    int n = vertexes.size();
+    int N = 1 << n;
+    const double INF = std::numeric_limits<double>::infinity();
 
-// Top-down 재귀 함수
-int tsp(int last, int mask) {
-    if (mask == (1 << n) - 1) {
-        return cost[last][0]; // 모든 도시 방문 후 0번으로 돌아감
-    }
-
-    if (dp[last].count(mask)) return dp[last][mask];
-
-    int min_cost = INT_MAX;
-    for (int next = 0; next < n; ++next) {
-        if (mask & (1 << next)) continue; // 이미 방문한 도시
-        int next_mask = mask | (1 << next);
-        int temp = cost[last][next] + tsp(next, next_mask);
-        min_cost = std::min(min_cost, temp);
-    }
-
-    return dp[last][mask] = min_cost;
-}
-
-int solve_tsp_top_down(const std::vector<Vertex>& vertexes_input) {
-    n = vertexes_input.size();
-    cost.assign(n, std::vector<int>(n));
-    dp.assign(n, std::unordered_map<int, int>());
-
-    // 거리 계산
+    std::vector<std::vector<double>> dp(N, std::vector<double>(n, INF));
+    std::vector<std::vector<int>> parent(N, std::vector<int>(n, -1));
+    std::vector<std::vector<double>> dist(n, std::vector<double>(n, 0.0));
     for (int i = 0; i < n; ++i)
         for (int j = 0; j < n; ++j)
-            cost[i][j] = distance(vertexes_input[i], vertexes_input[j]);
+            dist[i][j] = distance(vertexes[i], vertexes[j]);
 
-    return tsp(0, 1 << 0); // 시작점은 0, 0번 도시만 방문한 상태
+    dp[1][0] = 0.0; // 시작점 0에서 출발
+
+    for (int mask = 1; mask < N; ++mask) {
+        for (int last = 0; last < n; ++last) {
+            if (!(mask & (1 << last))) continue;
+            int prev_mask = mask ^ (1 << last);
+            if (prev_mask == 0 && last == 0) continue;
+            for (int k = 0; k < n; ++k) {
+                if (k == last || !(prev_mask & (1 << k))) continue;
+                double new_cost = dp[prev_mask][k] + dist[k][last];
+                if (new_cost < dp[mask][last]) {
+                    dp[mask][last] = new_cost;
+                    parent[mask][last] = k;
+                }
+            }
+        }
+    }
+
+    // 최소비용과 마지막 도시 구하기
+    double ans = INF;
+    int last_city = -1;
+    int full_mask = N - 1;
+    for (int last = 1; last < n; ++last) {
+        double cost = dp[full_mask][last] + dist[last][0];
+        if (cost < ans) {
+            ans = cost;
+            last_city = last;
+        }
+    }
+
+    // 경로 복원 (answer에 저장, 0번에서 시작해 0번으로 끝나도록)
+    answer.clear();
+    answer.push_back(0); // 출발점
+    int mask = full_mask;
+    int curr = last_city;
+    std::vector<int> temp_path;
+    while (curr != 0) {
+        temp_path.push_back(curr);
+        int prev = parent[mask][curr];
+        mask ^= (1 << curr);
+        curr = prev;
+    }
+    std::reverse(temp_path.begin(), temp_path.end());
+    for (int v : temp_path) answer.push_back(v);
+    answer.push_back(0); // 마지막에 출발점으로 복귀
+   
+    
+    this->tsp_sum = ans;
 }
