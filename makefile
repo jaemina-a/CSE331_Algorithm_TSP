@@ -14,7 +14,8 @@ SRCS = main.cpp \
        hamilton.cpp\
 	   utils.cpp\
 	   myalgo.cpp\
-	   heldkarp.cpp
+	   heldkarp.cpp\
+	   mst_2based.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 

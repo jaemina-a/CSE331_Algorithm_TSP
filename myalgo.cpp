@@ -35,7 +35,7 @@ void myalgorithm::cycle_make() {
             
         }
     }
-    std::cout << "connected conunt : "<< c_c << std::endl;
+    // std::cout << "connected conunt : "<< c_c << std::endl;
     
     
     for(int step=0; step<2; step++){
@@ -54,7 +54,7 @@ void myalgorithm::cycle_make() {
                 type_two ++;
         }
         }
-        std::cout <<"type_two:"<<type_two<< ", type_one:"<<type_one <<", type_zero:"<<type_zero<<std::endl;
+        // std::cout <<"type_two:"<<type_two<< ", type_one:"<<type_one <<", type_zero:"<<type_zero<<std::endl;
         for(int i=0;i<n; i++){
             if(degree[i] < 2){
                 left++;
@@ -84,7 +84,7 @@ void myalgorithm::cycle_make() {
                 c_c ++;
             }
         }
-        std::cout <<"left cnt : "<<left<<std::endl;
+        // std::cout <<"left cnt : "<<left<<std::endl;
     }
     for(int i=0;i <n;i++){
         if(vertexes[i].connected.size()!=2){
@@ -235,6 +235,11 @@ int myalgorithm::count_cycle() {
 }
 
 void myalgorithm::func(){
+    std::cout << "total cost MYALGO : "<< file_name << "\n";
+        if (this->answer_exist)
+        {
+            std::cout << "optimal cost : " << this->optimal_sum << "\n";
+        }
     auto start = std::chrono::high_resolution_clock::now();
     cycle_make();
     while(count_cycle()>1){
@@ -276,7 +281,7 @@ void myalgorithm::func(){
         current = next;
     } while(current != 0);
     outFile.close();
-    std::cout <<"total weight : " << total_weight << std::endl;
+    // std::cout <<"total weight : " << total_weight << std::endl;
     result_file_name = this->file_name + "_myalgo";
     result_directory = "results/"+result_file_name;
     outFile.open(result_directory);
