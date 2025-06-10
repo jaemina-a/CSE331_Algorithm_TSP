@@ -2,7 +2,7 @@
 #include "utils.h"
 #include <cmath>
 
-void heldkarp::held_karp() {
+void heldkarp::run_tsp_helper() {
     int n = vertexes.size();
     int N = 1 << n;
     const double INF = std::numeric_limits<double>::infinity();
@@ -61,5 +61,5 @@ void heldkarp::held_karp() {
     answer.push_back(0); // 마지막에 출발점으로 복귀
    
     
-    this->tsp_sum = ans;
+    this->total_sum = ans;
 }

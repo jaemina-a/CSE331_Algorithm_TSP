@@ -25,6 +25,42 @@ struct Edge
     int weight;
 };
 
+class tsp
+{
+protected:
+    std::vector<Vertex> vertexes;
+    int n;
+    std::string file_name;
+    bool answer_exist;
+    int optimal_sum;
+    int total_sum;
+    std::chrono::microseconds running_time;
+    std::vector<int> answer; // answer path
+    std::vector<int> result_path;
+
+    std::string result_file_name;
+    std::string result_directory;
+
+public:
+    tsp(std::string file_name, bool answer_exist)
+    {
+        this->n = 0;
+        this->file_name = file_name;
+        this->answer_exist = answer_exist;
+        this->total_sum = 0;
+        this->optimal_sum = 0;
+        read_tsp_file();
+        if (answer_exist)
+        {
+            read_answer_file();
+        }
+    }
+    void read_answer_file();
+    void read_tsp_file();
+    virtual void run_tsp();
+    virtual void make_result_file();
+};
+
 class mst_2based
 {
 private:
@@ -36,7 +72,6 @@ private:
     std::string file_name;
     std::chrono::microseconds running_time;
     std::vector<int> answer;
-    
 
 public:
     mst_2based(std::string file_name, bool answer)
@@ -53,76 +88,50 @@ public:
     void read_answer_file();
     void read_tsp_file();
     std::vector<int> primMST();
-    void preorderDFS(int u, const std::vector<std::vector<int>>& adj, std::vector<bool>& visited, std::vector<int>& tour);
-    std:: vector<int> tspApproximation();
+    void preorderDFS(int u, const std::vector<std::vector<int>> &adj, std::vector<bool> &visited, std::vector<int> &tour);
+    std::vector<int> tspApproximation();
     void func();
-
-    
 };
 
-class myalgorithm
+class myalgorithm : public tsp
 {
 private:
-    std::vector<Vertex> vertexes;
-    int n;
-    int cycle_cnt;
-    bool answer_exist;
-    int optimal_sum;
-    std::string file_name;
-    std::chrono::microseconds running_time;
     std::vector<std::pair<int, int>> open_node_pairs; // {u, v} 형태로 저장
-    std::vector<int> answer;
+    int cycle_cnt;
     std::vector<int> cycle_couunt_vec;
     std::vector<int> cycle_connect_nodes;
 
 public:
-    myalgorithm(std::string file_name, bool answer)
+    myalgorithm(std::string file_name, bool answer) : tsp(file_name, answer)
     {
-        this->file_name = file_name;
+        /*nothing*/
         this->cycle_cnt = 0;
-        this->answer_exist = answer;
-        read_tsp_file();
-        if (answer_exist)
-        {
-            read_answer_file();
-        }
+        this->result_file_name = this->file_name + "_myalgo";
+        this->result_directory = "results/" + result_file_name;
+        // std::cout << result_directory << std::endl;
     }
-    void read_answer_file();
-    void read_tsp_file();
     void cycle_make();
     void cycle_cut();
     void cycle_connect();
     int count_cycle();
     bool has_open_chain();
     void func();
+    void run_tsp();
+    void make_result_file();
 };
-class christofied
+
+class christofied : public tsp
 {
 private:
     std::vector<int> euler_circuit;
-
-    std::string file_name;
-    int n;
     int mst_sum;
-    int tsp_sum;
-    int optimal_sum;
-    bool answer_exist;
-    std::chrono::microseconds running_time;
-    std::vector<int> answer;
-    std::vector<Vertex> vertexes; // all
+
 public:
-    christofied(std::string file_name, bool answer_exist)
+    christofied(std::string file_name, bool answer_exist) : tsp(file_name, answer_exist)
     {
-        this->file_name = file_name;
         this->mst_sum = 0;
-        this->tsp_sum = 0;
-        this->answer_exist = answer_exist;
-        this->optimal_sum = 0;
-        read_tsp_file();
-        if (answer_exist)
-        {
-            read_answer_file();
-        }
+        this->result_file_name = this->file_name + "_Christo";
+        this->result_directory = "results/" + result_file_name;
     }
     void read_answer_file();
     void read_tsp_file();
@@ -130,7 +139,7 @@ public:
     void perfect_matching();
     void hierholzer();
     void hamilton();
-    void tsp()
+    void run_tsp()
     {
         auto start = std::chrono::high_resolution_clock::now();
         MST();
@@ -140,29 +149,19 @@ public:
         auto end = std::chrono::high_resolution_clock::now();
         this->running_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
     };
-    void print_result()
+    void make_result_file()
     {
-        std::cout << "total cost CHRISTO : "<< file_name <<" : "<< this->tsp_sum << "\nmst cost : " << this->mst_sum << "\n";
-        if (this->answer_exist)
-        {
-            std::cout << "optimal cost : " << this->optimal_sum << "\n";
-        }
-        std::filesystem::path cwd = std::filesystem::current_path();
-
-        // std::cout << "현재 경로: " << cwd << "\n";
-
-        std::string result_file_name = this->file_name + "_Christo";
-        std::string result_directory = "results/" + result_file_name;
         std::cout << result_directory << std::endl;
         std::ofstream outFile(result_directory);
-        outFile << "========================\n";
-        outFile << "Total cost : " << this->tsp_sum << "\nMST cost : " << this->mst_sum << "\n";
+        // outFile.open(result_directory);
+        outFile << "FILE NAME : " << this->file_name << '\n';
+        outFile << "Total cost : " << this->total_sum << "\n";
+        outFile << "MST cost : " << this->mst_sum << '\n';
         if (this->answer_exist)
         {
             outFile << "OPTIMAL COST : " << this->optimal_sum << "\n";
         }
         outFile << "ACTUAL RUNNING TIME : " << this->running_time.count() << "\n";
-        outFile << "========================\n";
         outFile.close();
     }
 };
@@ -175,68 +174,35 @@ static long get_rss_kb()
     return ru.ru_maxrss; // Linux: kB, macOS: bytes
 }
 
-class heldkarp
+class heldkarp : public tsp
 {
 
 private:
-    std::string file_name;
-    int n;
     int mst_sum;
-    int tsp_sum;
-    int optimal_sum;
-    bool answer_exist;
-    std::chrono::microseconds running_time;
-    std::vector<int> answer;
-    std::vector<Vertex> vertexes; // all
 public:
-    heldkarp(std::string file_name, bool answer_exist)
+    heldkarp(std::string file_name, bool answer_exist) : tsp(file_name, answer_exist)
     {
-        this->file_name = file_name;
-        this->answer_exist = answer_exist;
-        read_tsp_file();
-        if (answer_exist)
-        {
-            read_answer_file();
-        }
+        this->mst_sum = 0;
     }
-    void read_answer_file();
-    void held_karp();
-    void read_tsp_file();
-    void run_heldkapr()
+    void run_tsp()
     {
-
         auto start = std::chrono::high_resolution_clock::now();
-        long mem_before = get_rss_kb();
-        held_karp(); // 함수 호출
-        long mem_after = get_rss_kb();
-        std::cout << "ΔRSS ≃ " << (mem_after - mem_before) << " kB\n";
+        run_tsp_helper();
         auto end = std::chrono::high_resolution_clock::now();
         this->running_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-        // std::cout << this->running_time.count() << std::endl;
-    }
-    void print_result()
+    };
+    void run_tsp_helper();
+    void make_result_file()
     {
-        std::cout << "total cost : " << this->tsp_sum << "\n";
-        if (this->answer_exist)
-        {
-            std::cout << "optimal cost : " << this->optimal_sum << "\n";
-        }
-        std::string result_file_name = this->file_name + "_Christo";
-        std::string result_directory = "results/" + result_file_name;
         std::cout << result_directory << std::endl;
         std::ofstream outFile(result_directory);
-        outFile << "========================\n";
-        outFile << "Total cost : " << this->tsp_sum << "\nMST cost : " << this->mst_sum << "\n";
+        outFile << "FILE NAME : " << this->file_name << '\n';
+        outFile << "Total cost : " << this->total_sum << "\n";
         if (this->answer_exist)
         {
             outFile << "OPTIMAL COST : " << this->optimal_sum << "\n";
         }
         outFile << "ACTUAL RUNNING TIME : " << this->running_time.count() << "\n";
-        for (int i = 0; i < n; i++)
-        {
-            outFile << answer[i] << "\n";
-        }
-        outFile << "========================\n";
         outFile.close();
     }
 };

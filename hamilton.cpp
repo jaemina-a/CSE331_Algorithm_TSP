@@ -60,9 +60,9 @@ void christofied::hamilton() {
     // 원래 시작점으로 다시 돌아오면 TSP 근사 경로 완성
     path.push_back(path[0]);
     for(int i=0 ;i<n-1; i++){
-        this->tsp_sum += distance(vertexes[path[i]] , vertexes[path[i+1]]);
+        this->total_sum += distance(vertexes[path[i]] , vertexes[path[i+1]]);
     }
-    this->tsp_sum += distance(vertexes[path[n-1]], vertexes[0]);
+    this->total_sum += distance(vertexes[path[n-1]], vertexes[0]);
 
     // std::cout <<"HAMILTON END\n";
 }

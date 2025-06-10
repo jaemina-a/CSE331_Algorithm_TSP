@@ -234,6 +234,53 @@ int myalgorithm::count_cycle() {
     return cycles;
 }
 
+void myalgorithm::make_result_file(){
+    std::cout << result_directory << std::endl;
+    std::ofstream outFile(result_directory);
+    // outFile.open(result_directory);
+    outFile << "FILE NAME : " << this->file_name << '\n';
+    outFile << "Total cost : " << this->total_sum << "\n";
+    if(this->answer_exist){
+        outFile << "OPTIMAL COST : " <<this->optimal_sum << "\n";
+    }
+    outFile << "ACTUAL RUNNING TIME : " << this->running_time.count() << "\n";
+    outFile <<"CYCLE COUNT\n";
+    for(int i=0; i<cycle_couunt_vec.size(); i++){
+        outFile<<cycle_couunt_vec[i] << "\n";
+    }
+    outFile.close();
+}
+
+void myalgorithm::run_tsp(){
+    auto start = std::chrono::high_resolution_clock::now();
+    cycle_make();
+    while(count_cycle()>1){
+        cycle_couunt_vec.push_back(count_cycle());
+        cycle_cut();
+        cycle_connect();
+    }
+    auto end = std::chrono::high_resolution_clock::now();
+    this->running_time = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
+    int current = 0;
+    int prev = -1;
+    std::vector<bool> visited(n, false);
+    do {
+        visited[current] = true;
+        // 다음 정점 찾기
+        int next = -1;
+        for(int v : vertexes[current].connected) {
+            if(v != prev) {
+                next = v;
+                break;
+            }
+        }
+        this->result_path.push_back(next);
+        this->total_sum += distance(vertexes[current], vertexes[next]);
+        prev = current;
+        current = next;
+    } while(current != 0);
+}
+
 void myalgorithm::func(){
     std::cout << "total cost MYALGO : "<< file_name << "\n";
         if (this->answer_exist)
