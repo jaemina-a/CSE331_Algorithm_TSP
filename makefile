@@ -3,7 +3,7 @@ CXX = g++
 CXXFLAGS = -std=c++17 -O2 -Wall
 
 # 헤더파일
-HEADERS = christo.h utils.h
+HEADERS = tsp.h utils.h
 
 # 소스파일과 오브젝트파일
 SRCS = main.cpp \
